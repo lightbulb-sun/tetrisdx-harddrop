@@ -1,9 +1,37 @@
-ROM = tetrisdx.gbc
-SOURCE_FILE = harddrop.asm
-OBJECT_FILE = harddrop.o
-OUTPUT = harddrop.gbc
+.DELETE_ON_ERROR:
 
-all:
-	rgbasm -v $(SOURCE_FILE) -o $(OBJECT_FILE)
-	rgblink -v -O $(ROM) -o $(OUTPUT) $(OBJECT_FILE)
-	rgbfix -v -f gh $(OUTPUT)
+AS = rgbasm
+ASFLAGS = -E
+LD = rgblink
+FIX = rgbfix
+FIXFLAGS = -f gh
+
+ROM = tetrisdx.gbc
+NAME = harddrop
+SOURCE_FILE = $(NAME).asm
+OBJECT_FILE = $(NAME).o
+OBJECT_FILE_GHOST_LIGHT = $(NAME)_ghost-light.o
+OBJECT_FILE_GHOST_DARK = $(NAME)_ghost-dark.o
+OUTPUT_ROM = $(NAME).gbc
+OUTPUT_ROM_GHOST_LIGHT = $(NAME)_ghost-light.gbc
+OUTPUT_ROM_GHOST_DARK = $(NAME)_ghost-dark.gbc
+OBJS = $(OBJECT_FILE) $(OBJECT_FILE_GHOST_LIGHT) $(OBJECT_FILE_GHOST_DARK) $(OUTPUT_ROM) $(OUTPUT_ROM_GHOST_LIGHT) $(OUTPUT_ROM_GHOST_DARK)
+
+all: $(OUTPUT_ROM) $(OUTPUT_ROM_GHOST_LIGHT) $(OUTPUT_ROM_GHOST_DARK)
+
+%.gbc: %.o
+	$(LD) -O $(ROM) -o $@ $<
+	$(FIX) $(FIXFLAGS) $@
+
+$(OBJECT_FILE): $(SOURCE_FILE)
+	$(AS) $(ASFLAGS) -D ENABLE_GHOST=0 $< -o $@
+
+$(OBJECT_FILE_GHOST_LIGHT): $(SOURCE_FILE)
+	$(AS) $(ASFLAGS) -D ENABLE_GHOST=1 -D GHOST_COLOR_DARK=0 $< -o $@
+
+$(OBJECT_FILE_GHOST_DARK): $(SOURCE_FILE)
+	$(AS) $(ASFLAGS) -D ENABLE_GHOST=1 -D GHOST_COLOR_DARK=1 $< -o $@
+
+.PHONY: all clean test
+clean:
+	rm -rf $(OBJS)
