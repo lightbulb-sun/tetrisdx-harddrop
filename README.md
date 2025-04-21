@@ -12,7 +12,7 @@ by SpongeDan:
 idea by github user
 [szechp](https://github.com/szechp))
 
-![ghost-screenshots](https://github.com/user-attachments/assets/b07bf201-054e-473a-bd9d-a9eb26fab568)
+![ghost-screenshots](https://github.com/user-attachments/assets/861f52ee-5875-4ce9-8510-42ca78fd0417)
 
 ## Download
 The latest release can be found on the
